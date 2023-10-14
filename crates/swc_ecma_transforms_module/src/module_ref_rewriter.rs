@@ -52,14 +52,7 @@ impl QueryRef for ImportQuery {
                 };
 
                 if let Some(imported_name) = mod_prop {
-                    let prop = prop_name(imported_name, DUMMY_SP).into();
-
-                    MemberExpr {
-                        obj: Box::new(mod_expr),
-                        span,
-                        prop,
-                    }
-                    .into()
+                    prop_name(imported_name, DUMMY_SP).into_member_prop(mod_expr.into())
                 } else {
                     mod_expr
                 }

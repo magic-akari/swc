@@ -1,5 +1,5 @@
 #![deny(clippy::all)]
-#![deny(unused)]
+#![allow(unused)]
 #![allow(clippy::needless_lifetimes)]
 #![allow(clippy::vec_box)]
 #![allow(clippy::mutable_key_type)]
@@ -15,6 +15,7 @@ pub mod common_js;
 pub mod import_analysis;
 pub(crate) mod module_decl_strip;
 pub(crate) mod module_ref_rewriter;
+pub mod new_system_js;
 pub mod path;
 pub mod rewriter;
 pub mod system_js;

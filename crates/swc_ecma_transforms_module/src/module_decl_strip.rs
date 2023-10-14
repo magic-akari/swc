@@ -738,6 +738,10 @@ impl ExportItem {
         self.0
     }
 
+    pub fn local_ident(&self) -> &Ident {
+        &self.1
+    }
+
     pub fn into_local_ident(self) -> Ident {
         self.1
     }

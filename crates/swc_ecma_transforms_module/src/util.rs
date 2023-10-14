@@ -1,3 +1,5 @@
+use std::hash::Hash;
+
 use is_macro::Is;
 use serde::{Deserialize, Serialize};
 use swc_atoms::JsWord;
@@ -370,36 +372,103 @@ pub(crate) fn emit_export_stmts(exports: Ident, mut prop_list: Vec<ExportKV>) ->
 }
 
 pub(crate) fn prop_name(key: &str, span: Span) -> IdentOrStr {
-    if is_valid_prop_ident(key) {
-        IdentOrStr::Ident(quote_ident!(span, key))
-    } else {
-        IdentOrStr::Str(quote_str!(span, key))
-    }
+    IdentOrStr(key.into(), span)
 }
 
-pub(crate) enum IdentOrStr {
-    Ident(Ident),
-    Str(Str),
+#[derive(Clone)]
+pub(crate) struct IdentOrStr(JsWord, Span);
+
+impl IdentOrStr {
+    pub fn new(name: JsWord, span: Span) -> Self {
+        Self(name, span)
+    }
+
+    pub fn into_str(self) -> Str {
+        Str {
+            span: self.1,
+            value: self.0,
+            raw: None,
+        }
+    }
+
+    pub fn into_member_prop(self, obj: Box<Expr>) -> Expr {
+        MemberExpr {
+            span: DUMMY_SP,
+            obj,
+            prop: self.into(),
+        }
+        .into()
+    }
+
+    pub fn is_specific_name(&self, name: &str) -> bool {
+        self.0 == name
+    }
 }
 
 impl From<IdentOrStr> for PropName {
     fn from(val: IdentOrStr) -> Self {
-        match val {
-            IdentOrStr::Ident(i) => Self::Ident(i),
-            IdentOrStr::Str(s) => Self::Str(s),
+        if is_valid_prop_ident(&val.0) {
+            Self::Ident(quote_ident!(val.1, val.0))
+        } else {
+            Self::Str(quote_str!(val.1, val.0))
         }
     }
 }
 
 impl From<IdentOrStr> for MemberProp {
     fn from(val: IdentOrStr) -> Self {
-        match val {
-            IdentOrStr::Ident(i) => Self::Ident(i),
-            IdentOrStr::Str(s) => Self::Computed(ComputedPropName {
+        if is_valid_prop_ident(&val.0) {
+            Self::Ident(quote_ident!(val.1, val.0))
+        } else {
+            Self::Computed(ComputedPropName {
                 span: DUMMY_SP,
-                expr: s.into(),
-            }),
+                expr: quote_str!(val.1, val.0).into(),
+            })
         }
+    }
+}
+
+impl From<JsWord> for IdentOrStr {
+    fn from(value: JsWord) -> Self {
+        Self(value, DUMMY_SP)
+    }
+}
+
+impl From<(JsWord, Span)> for IdentOrStr {
+    fn from(value: (JsWord, Span)) -> Self {
+        Self(value.0, value.1)
+    }
+}
+
+impl From<(&JsWord, &ExportItem)> for IdentOrStr {
+    fn from(value: (&JsWord, &ExportItem)) -> Self {
+        Self(value.0.clone(), value.1.export_name_span())
+    }
+}
+
+impl PartialEq for IdentOrStr {
+    fn eq(&self, other: &Self) -> bool {
+        self.0 == other.0
+    }
+}
+
+impl PartialOrd for IdentOrStr {
+    fn partial_cmp(&self, other: &Self) -> Option<std::cmp::Ordering> {
+        self.0.partial_cmp(&other.0)
+    }
+}
+
+impl Eq for IdentOrStr {}
+
+impl Ord for IdentOrStr {
+    fn cmp(&self, other: &Self) -> std::cmp::Ordering {
+        self.0.cmp(&other.0)
+    }
+}
+
+impl Hash for IdentOrStr {
+    fn hash<H: std::hash::Hasher>(&self, state: &mut H) {
+        self.0.hash(state);
     }
 }
 

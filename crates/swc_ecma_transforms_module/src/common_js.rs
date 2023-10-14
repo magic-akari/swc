@@ -460,12 +460,10 @@ where
                 let expr: Expr = 0.into();
 
                 let (key, export_item) = &export_id_list[0];
-                let prop = prop_name(key, DUMMY_SP).into();
-                let export_binding = MemberExpr {
-                    obj: Box::new(self.exports().into()),
-                    span: export_item.export_name_span(),
-                    prop,
-                };
+
+                let export_binding = prop_name(key, export_item.export_name_span())
+                    .into_member_prop(self.exports().into());
+
                 let expr = expr.make_assign_to(op!("="), export_binding.as_pat_or_expr());
                 let expr = BinExpr {
                     span: DUMMY_SP,
