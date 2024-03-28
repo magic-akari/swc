@@ -2947,11 +2947,11 @@ __metadata:
   linkType: hard
 
 "@swc/plugin-jest@npm:^1.5.117":
-  version: 1.5.117
-  resolution: "@swc/plugin-jest@npm:1.5.117"
+  version: 1.5.121
+  resolution: "@swc/plugin-jest@npm:1.5.121"
   dependencies:
     "@swc/counter": "npm:^0.1.3"
-  checksum: 10/29f17d0479d04fca495991ffe900c504fe739424c44c4546e5e3dc202d47849e17cee0d35fef95fbc29bf378829768db25cb14521a6a52ff04b5b91b685e2145
+  checksum: 10/7ff68c12cd1b4940227368e0606502b6ac1463559e33b98a50835d9e4e49bcdb4e08aedb68fe7c3cdca34a93694f72b5c8e4370f7721ef98be561d17bc7eea67
   languageName: node
   linkType: hard
 
