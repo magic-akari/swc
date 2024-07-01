@@ -3,7 +3,7 @@ use swc_common::{ast_node, util::take::Take, EqIgnoreSpan, Span, DUMMY_SP};
 
 use crate::{
     expr::Expr,
-    function::{Function, ParamOrTsParamProp},
+    function::{Function, Param},
     ident::PrivateName,
     prop::PropName,
     stmt::BlockStmt,
@@ -223,7 +223,7 @@ pub struct Constructor {
 
     pub key: PropName,
 
-    pub params: Vec<ParamOrTsParamProp>,
+    pub params: Vec<Param>,
 
     #[cfg_attr(feature = "serde-impl", serde(default))]
     pub body: Option<BlockStmt>,

@@ -5,7 +5,7 @@ use crate::{
     class::Decorator,
     pat::Pat,
     stmt::BlockStmt,
-    typescript::{TsParamProp, TsTypeAnn, TsTypeParamDecl},
+    typescript::{Accessibility, TsParamProp, TsTypeAnn, TsTypeParamDecl},
 };
 
 /// Common parts of function and method.
@@ -61,6 +61,13 @@ pub struct Param {
     #[cfg_attr(feature = "serde-impl", serde(default))]
     pub decorators: Vec<Decorator>,
     pub pat: Pat,
+
+    #[cfg_attr(feature = "serde-impl", serde(default))]
+    pub accessibility: Option<Accessibility>,
+    #[cfg_attr(feature = "serde-impl", serde(rename = "override"))]
+    pub is_override: bool,
+    pub deferred: bool,
+    pub readonly: bool,
 }
 
 impl From<Pat> for Param {
@@ -69,7 +76,17 @@ impl From<Pat> for Param {
             span: DUMMY_SP,
             decorators: Default::default(),
             pat,
+            accessibility: None,
+            is_override: false,
+            deferred: false,
+            readonly: false,
         }
+    }
+}
+
+impl Param {
+    pub fn is_ts_param_prop(&self) -> bool {
+        self.readonly || self.is_override || self.accessibility.is_some()
     }
 }
 

@@ -277,7 +277,7 @@ impl<I: Tokens> Parser<I> {
         Ok(pat)
     }
 
-    pub(super) fn parse_constructor_params(&mut self) -> PResult<Vec<ParamOrTsParamProp>> {
+    pub(super) fn parse_constructor_params(&mut self) -> PResult<Vec<Param>> {
         let mut params = vec![];
         let mut rest_span = Span::default();
 
